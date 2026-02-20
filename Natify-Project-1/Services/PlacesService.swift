@@ -27,15 +27,15 @@ final class PlacesService {
         ]
 
         let request = GMSPlaceSearchNearbyRequest(
-            locationRestriction: GMSPlaceCircularLocationOption(location.coordinate, 5000),
+            locationRestriction: GMSPlaceCircularLocationOption(location.coordinate, Constants.searchRadius),
             placeProperties: placeProperties
         )
         
-        request.includedTypes = ["cafe", "restaurant"]
+        request.includedTypes = Constants.includedPlaceTypes
     
         client.searchNearby(with: request) { (places, error) in
             guard let results = places, error == nil else {
-                print("Error fetching nearby places: \(error?.localizedDescription ?? "Unknown error")")
+                print("\(Constants.fetchErrorPrefix)\(error?.localizedDescription ?? Constants.unknownError)")
                 completion([])
                 return
             }
@@ -43,15 +43,15 @@ final class PlacesService {
             let mappedPlaces = results.map { gmsPlace in
                 let components = gmsPlace.addressComponents ?? []
                 let city = components.first(where: { component in
-                    component.types.contains("locality")
-                        || component.types.contains("postal_town")
-                        || component.types.contains("administrative_area_level_1")
+                    component.types.contains(Constants.localityType)
+                        || component.types.contains(Constants.postalTownType)
+                        || component.types.contains(Constants.adminAreaLevel1Type)
                 })?.name
-                let country = components.first(where: { $0.types.contains("country") })?.name
+                let country = components.first(where: { $0.types.contains(Constants.countryType) })?.name
 
                 return Place(
-                    id: gmsPlace.placeID ?? "",
-                    name: gmsPlace.name ?? "",
+                    id: gmsPlace.placeID ?? Constants.emptyString,
+                    name: gmsPlace.name ?? Constants.emptyString,
                     address: gmsPlace.formattedAddress,
                     city: city,
                     country: country,
@@ -65,5 +65,21 @@ final class PlacesService {
 
             completion(mappedPlaces)
         }
+    }
+}
+
+private extension PlacesService {
+    enum Constants {
+        static let searchRadius: CLLocationDistance = 5000
+        static let includedPlaceTypes = ["cafe", "restaurant"]
+
+        static let localityType = "locality"
+        static let postalTownType = "postal_town"
+        static let adminAreaLevel1Type = "administrative_area_level_1"
+        static let countryType = "country"
+
+        static let fetchErrorPrefix = "Error fetching nearby places: "
+        static let unknownError = "Unknown error"
+        static let emptyString = ""
     }
 }

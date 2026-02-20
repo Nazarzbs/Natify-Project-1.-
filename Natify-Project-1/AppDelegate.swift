@@ -13,7 +13,9 @@ import GooglePlaces
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let apiKey = "AIzaSyDD-4ZRi_Kr1V-BN-qEOlgD2RQMgKMFOPY"
+        let path = Bundle.main.path(forResource: "Secrets", ofType: "plist")
+        let apiKey = NSDictionary(contentsOfFile: path ?? "")?["GoogleMapsAPIKey"] as? String ?? ""
+
         GMSServices.provideAPIKey(apiKey)
         GMSPlacesClient.provideAPIKey(apiKey)
         return true
