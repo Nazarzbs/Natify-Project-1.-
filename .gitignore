@@ -7,3 +7,6 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Secrets
+Natify-Project-1/Secrets.plist
