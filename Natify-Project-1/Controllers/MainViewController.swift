@@ -161,6 +161,8 @@ private extension MainViewController {
                 latitude: place.coordinate.latitude,
                 longitude: place.coordinate.longitude
             )
+            marker.title = "\(place.name), \(place.country ?? "")"
+            marker.snippet = "\(place.city ?? ""), \(place.address ?? "")"
             marker.map = mapView
         }
 
