@@ -16,6 +16,7 @@ struct Place {
     let country: String?
     let coordinate: Coordinate
     let types: [String]
+    let rating: Double?
     
     var displayInfo: String {
         var info = [name]

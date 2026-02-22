@@ -23,7 +23,8 @@ final class PlacesService {
             GMSPlaceProperty.coordinate.rawValue,
             GMSPlaceProperty.formattedAddress.rawValue,
             GMSPlaceProperty.addressComponents.rawValue,
-            GMSPlaceProperty.types.rawValue
+            GMSPlaceProperty.types.rawValue,
+            GMSPlaceProperty.rating.rawValue
         ]
 
         let request = GMSPlaceSearchNearbyRequest(
@@ -59,7 +60,8 @@ final class PlacesService {
                         latitude: gmsPlace.coordinate.latitude,
                         longitude: gmsPlace.coordinate.longitude
                     ),
-                    types: gmsPlace.types ?? []
+                    types: gmsPlace.types ?? [],
+                    rating: gmsPlace.rating > 0 ? Double(gmsPlace.rating) : nil
                 )
             }
 

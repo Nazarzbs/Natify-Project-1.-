@@ -45,6 +45,20 @@ final class MainViewController: UIViewController, GMSMapViewDelegate {
         return button
     }()
     
+    private let listButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .systemBackground
+        button.tintColor = .systemBlue
+        button.layer.cornerRadius = Constants.centerButtonCornerRadius
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = Constants.centerButtonShadowOpacity
+        button.layer.shadowOffset = CGSize(width: 0, height: Constants.centerButtonShadowOffsetY)
+        button.layer.shadowRadius = Constants.centerButtonShadowRadius
+        button.setImage(UIImage(systemName: Constants.listButtonImageName), for: .normal)
+        return button
+    }()
+
     private let locationService = LocationService()
     
     private let placesService = PlacesService()
@@ -76,15 +90,29 @@ private extension MainViewController {
     func setupViews() {
         mapView.delegate = self
         centerButton.addTarget(self, action: #selector(centerOnUserLocation), for: .touchUpInside)
+        listButton.addTarget(self, action: #selector(openPlacesList), for: .touchUpInside)
 
         view.addSubview(mapView)
         view.addSubview(centerButton)
+        view.addSubview(listButton)
 
         NSLayoutConstraint.activate([
             mapView.topAnchor.constraint(equalTo: view.topAnchor),
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            listButton.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+                constant: -Constants.centerButtonTrailingInset
+            ),
+            listButton.bottomAnchor.constraint(
+                equalTo: centerButton.topAnchor,
+                constant: -Constants.listButtonSpacing
+            ),
+            listButton.widthAnchor.constraint(equalToConstant: Constants.centerButtonSize),
+            listButton.heightAnchor.constraint(equalToConstant: Constants.centerButtonSize),
+
             centerButton.trailingAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.trailingAnchor,
                 constant: -Constants.centerButtonTrailingInset
@@ -138,6 +166,12 @@ private extension MainViewController {
         centerMap(on: location)
     }
 
+    @objc
+    func openPlacesList() {
+        let listVC = PlacesListViewController(places: places)
+        navigationController?.pushViewController(listVC, animated: true)
+    }
+
     func fetchNearbyPlacesIfNeeded(for location: CLLocation) {
         guard !didFetchNearby else { return }
         didFetchNearby = true
@@ -184,6 +218,9 @@ private extension MainViewController {
         static let searchCircleFillOpacity: CGFloat = 0.1
         static let searchCircleStrokeOpacity: CGFloat = 0.35
         static let searchCircleStrokeWidth: CGFloat = 2
+
+        static let listButtonImageName = "list.bullet"
+        static let listButtonSpacing: CGFloat = 12
 
         static let centerButtonImageName = "location.fill"
         static let centerButtonSize: CGFloat = 48
